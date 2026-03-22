@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 
 from handlers.admin import router as admin_router
 from handlers.archive import router as archive_router
@@ -23,12 +24,9 @@ async def main() -> None:
     bot = Bot(token=settings.bot_token)
     dp = Dispatcher()
 
-    dp.include_router(create_order_router)
-    dp.include_router(menu_router)
-    dp.include_router(orders_router)
-    dp.include_router(user_settings_router)
-    dp.include_router(archive_router)
-    dp.include_router(admin_router)
+    dp.include_routers(
+        create_order_router, menu_router, orders_router, user_settings_router, archive_router, admin_router
+    )
 
     await db.connect()
     await db.init_db()
