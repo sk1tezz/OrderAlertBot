@@ -164,7 +164,6 @@ _MONTHS_RU = [
 
 
 def time_deadline_kb(selected_time: str | None = None) -> InlineKeyboardMarkup:
-    # Выбор времени для дедлайна. На практике достаточно часовых точек + 23:59.
     times = [f"{h:02d}:00" for h in range(0, 24)] + ["23:59"]
     cols = 5
     rows = []
@@ -177,7 +176,6 @@ def time_deadline_kb(selected_time: str | None = None) -> InlineKeyboardMarkup:
             row.append(
                 InlineKeyboardButton(
                     text=label,
-                    # В callback-data двоеточие ломает разбиение по ":" — передаем HH_MM.
                     callback_data=f"create:deadline:time:{t.replace(':', '_')}",
                 )
             )
@@ -205,13 +203,11 @@ def calendar_deadline_kb(
     if min_date is None:
         min_date = today_local
 
-    cal = calendar.Calendar(firstweekday=0)  # Понедельник
-    # Возвращает ровно 5-6 недель (42 дня обычно), включая “хвост” с соседних месяцев.
+    cal = calendar.Calendar(firstweekday=0)
     month_dates = list(cal.itermonthdates(year, month))
 
     rows: list[list[InlineKeyboardButton]] = []
 
-    # Навигация по месяцам
     prev_year, prev_month = (year - 1, 12) if month == 1 else (year, month - 1)
     next_year, next_month = (year + 1, 1) if month == 12 else (year, month + 1)
     month_title = f"{_MONTHS_RU[month - 1]} {year}"
@@ -222,11 +218,8 @@ def calendar_deadline_kb(
             InlineKeyboardButton(text=">>", callback_data=f"create:deadline:cal:{next_year}:{next_month}"),
         ]
     )
-
-    # Заголовок недели
     rows.append([InlineKeyboardButton(text=d, callback_data="noop") for d in _WEEKDAYS_RU])
 
-    # Сетка дней (7 столбцов)
     for i in range(0, len(month_dates), 7):
         week = month_dates[i : i + 7]
         row: list[InlineKeyboardButton] = []

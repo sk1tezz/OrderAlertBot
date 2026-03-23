@@ -20,8 +20,6 @@ _tick_lock = asyncio.Lock()
 
 
 async def reminder_tick():
-    # Защита от параллельных запусков одного и того же тика.
-    # Иначе при большом количестве заказов один и тот же remind_type может отправиться несколько раз.
     async with _tick_lock:
         assert db.pool is not None
         now = now_utc()
@@ -50,8 +48,6 @@ async def reminder_tick():
             for remind_type, threshold, enabled in plan:
                 if not enabled or remind_type in sent_types:
                     continue
-                # Отправляем напоминание только в окно вокруг момента:
-                # now ~= deadline - threshold
                 if threshold.total_seconds() == 0:
                     should_send = left <= timedelta(seconds=0) and left >= -send_window
                 else:
@@ -95,8 +91,7 @@ async def reminder_tick():
 async def setup_scheduler(bot):
     global _bot
     _bot = bot
-    # Если предыдущий тик еще выполняется — не запускаем новый.
-    # max_instances/coalesce убирают дубликаты при долгом цикле.
+
     scheduler.add_job(
         reminder_tick,
         "interval",

@@ -4,7 +4,6 @@ from aiogram.fsm.state import State, StatesGroup
 class CreateOrderState(StatesGroup):
     title = State()
     description = State()
-    # Выбор дедлайна: сначала дата, потом время (оба через кнопки).
     deadline_date = State()
     deadline_time = State()
     confirm = State()
