@@ -55,6 +55,34 @@ python main.py
 
 Бот работает в режиме **long polling** (вебхук очищается при старте).
 
+## Запуск через Docker
+
+Проект содержит `Dockerfile` и `docker-compose.yml`, которые поднимают бота и PostgreSQL в контейнерах.
+
+Скопируйте пример переменных окружения и заполните `.env` (см. раздел выше):
+
+```bash
+cp .env.example .env
+```
+
+В `.env` укажите `DB_HOST=db` — под этим именем сервис базы данных доступен внутри docker-сети.
+
+Соберите образы и запустите контейнеры:
+
+```bash
+docker compose up -d --build
+```
+
+Полезные команды:
+
+```bash
+docker compose logs -f bot   # логи бота
+docker compose down          # остановить контейнеры
+docker compose down -v       # остановить и удалить данные PostgreSQL
+```
+
+Таблицы `users`, `orders` и `reminders_log` создаются автоматически при первом запуске.
+
 ## Структура проекта
 
 | Путь | Назначение |
